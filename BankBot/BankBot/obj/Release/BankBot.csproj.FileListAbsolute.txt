@@ -1,0 +1,39 @@
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Bot Application1.dll.config
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Bot Application1.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Bot Application1.pdb
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Autofac.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Chronic.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.Bot.Builder.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.Bot.Connector.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.IdentityModel.Protocol.Extensions.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.Rest.ClientRuntime.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.WindowsAzure.Configuration.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Newtonsoft.Json.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Net.Http.Formatting.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Web.Http.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Web.Http.WebHost.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Autofac.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.Bot.Builder.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.Bot.Connector.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.IdentityModel.Protocol.Extensions.pdb
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.IdentityModel.Protocol.Extensions.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.Rest.ClientRuntime.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.WindowsAzure.Configuration.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Newtonsoft.Json.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.IdentityModel.Tokens.Jwt.pdb
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.IdentityModel.Tokens.Jwt.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Net.Http.Formatting.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Web.Http.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Web.Http.WebHost.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\ar\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\en\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\es\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\fa\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\fr\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\ja\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\ru\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\zh-hans\Microsoft.Bot.Builder.resources.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\BankBot.csprojResolveAssemblyReference.cache
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\Bot Application1.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\Bot Application1.pdb
