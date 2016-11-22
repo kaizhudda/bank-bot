@@ -30,7 +30,10 @@ namespace BankBot
                 BotData userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                 // Get/Set users property data
                 string endOutput = "Hello, welcome to DJI Bank";
-                bool isFafafa = true;
+                bool isFound = true;
+                bool isExchangeRate = false;
+                bool isBankNumber = false;
+                bool isOpeningHours = false;
                 ExchangeLUIS StLUIS = await GetEntityFromLUIS(activity.Text);
                 if (StLUIS.intents.Count() > 0)
                 {
@@ -38,18 +41,56 @@ namespace BankBot
                     {
                         case "ExchangeRate":
                             endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
                             break;
                         case "ExchangeRate2":
                             endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "ExchangeRateUSD":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "ExchangeRateUSD2":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "ExchangeRateEUR":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "ExchangeRateEUR2":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "ExchangeRateGBP":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "ExchangeRateGBP2":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isExchangeRate = true;
+                            break;
+                        case "GetBankNumber":
+                            endOutput = GetPhoneNumber();
+                            isBankNumber = true; 
+                            break;
+                        case "Timings":
+                            endOutput = GetBankHours(StLUIS.entities[0].type);
+                            isOpeningHours = true;
+                            break;
+                        case "Timings2":
+                            endOutput = GetBankHours(StLUIS.entities[0].type);
+                            isOpeningHours = true;
                             break;
                         default:
-                            isFafafa = false;
+                            isFound = false;
                             //endOutput = "Sorry, I am not getting you...";
                             break;
                     }
-                    if (isFafafa == true)
+                    if (isFound == true && isExchangeRate == true)
                     {
-                        Activity replyToConversation = activity.CreateReply("1 NZD will give you:");
+                        Activity replyToConversation = activity.CreateReply("");
                         replyToConversation.Recipient = activity.From;
                         replyToConversation.Type = "message";
                         replyToConversation.Attachments = new List<Attachment>();
@@ -58,12 +99,44 @@ namespace BankBot
                         HeroCard plCard = new HeroCard()
                         {
                             Title = endOutput,
-                            //Subtitle = "",
+                            Subtitle = "will give you 1.00 NZD",
                             //Images = cardImages
                         };
                         Attachment plAttachment = plCard.ToAttachment();
                         replyToConversation.Attachments.Add(plAttachment);
                         var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    } else if (isFound == true && isBankNumber == true) {
+                        Activity replyToConversation = activity.CreateReply("");
+                        replyToConversation.Recipient = activity.From;
+                        replyToConversation.Type = "message";
+                        replyToConversation.Attachments = new List<Attachment>();
+                        //replyToConversation.AttachmentLayout = "carousel";
+                        List<CardImage> cardImages = new List<CardImage>();
+                        cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        List<CardAction> cardButtons = new List<CardAction>();
+                        CardAction plButton = new CardAction()
+                        {
+                            Value = endOutput,
+                            Type = "call",
+                            Title = "Call us"
+                        };
+                        cardButtons.Add(plButton);
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = "JDI Bank!",
+                            Images = cardImages,
+                            Buttons = cardButtons
+                        };
+                        Attachment plAttachment = plCard.ToAttachment();
+                        replyToConversation.Attachments.Add(plAttachment);
+                        var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    } else if (isFound == true && isOpeningHours == true)
+                    {
+                        // return repy to user 
+                        Activity openHourReply = activity.CreateReply(endOutput);
+                        await connector.Conversations.ReplyToActivityAsync(openHourReply);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
 
@@ -80,7 +153,7 @@ namespace BankBot
                 // calc something for us to return
                 if (userData.GetProperty<bool>("SentGreeting"))
                 {
-                    endOutput = "Hello Again";
+                    endOutput = "Hello, thanks for visiting us again! Type 'help' for list of commands you can ask me!";
                 } else
                 {
                     userData.SetProperty<bool>("SentGreeting", true);
@@ -138,16 +211,34 @@ namespace BankBot
                     replyToConversation.Recipient = activity.From;
                     replyToConversation.Type = "message";
                     replyToConversation.Attachments = new List<Attachment>();
+                    replyToConversation.AttachmentLayout = "carousel";
                     List<CardImage> cardImages = new List<CardImage>();
                     cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                    List<CardAction> cardButtons = new List<CardAction>();
+                    CardAction plButton = new CardAction()
+                    {
+                        Value = "tel:123456789",
+                        Type = "call",
+                        Title = "Call us"
+                    };
+                    cardButtons.Add(plButton);
                     HeroCard plCard = new HeroCard()
                     {
                         Title = "Welcome to JDI Bank!",
                         Subtitle = "type 'JDI bank' for more info!",
-                        Images = cardImages
+                        Images = cardImages,
+                        Buttons = cardButtons
                     };
                     Attachment plAttachment = plCard.ToAttachment();
                     replyToConversation.Attachments.Add(plAttachment);
+                    HeroCard plCard2 = new HeroCard()
+                    {
+                        Title = "help",
+                        Subtitle = "help is on its way!",
+                        Images = cardImages
+                    };
+                    Attachment plAttachment2 = plCard2.ToAttachment();
+                    replyToConversation.Attachments.Add(plAttachment2);
                     var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
                     return Request.CreateResponse(HttpStatusCode.OK);
                 }
@@ -266,9 +357,9 @@ namespace BankBot
             {
                 endOutput = toRate + ": " + JPY;
             }
-            if (toRate == "GBP")
+            if (toRate == "GBP" || toRate == "POUNDS")
             {
-                endOutput = toRate + ": " + GBP;
+                endOutput = "GBP" + ": " + GBP;
             }
             if (toRate == "SGD")
             {
@@ -276,5 +367,25 @@ namespace BankBot
             }
             return endOutput;
         }
+
+        // Get Banks Phone Number
+        private string GetPhoneNumber()
+        {
+            var PhoneNumber = 123456789;
+            return "tel:" + PhoneNumber;
+        }
+
+        // Get Banks Hours
+        private string GetBankHours(string entityType)
+        {
+            var opening = "9:00AM - 5:00PM (Monday to Sunday)";
+            if (entityType == "OpenHours")
+            {
+                return opening;
+            }
+            return "incorrect";
+
+        }
+
     }
 }
