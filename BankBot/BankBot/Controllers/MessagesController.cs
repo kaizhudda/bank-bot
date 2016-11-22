@@ -30,19 +30,52 @@ namespace BankBot
                 BotData userData = await stateClient.BotState.GetUserDataAsync(activity.ChannelId, activity.From.Id);
                 // Get/Set users property data
                 string endOutput = "Hello, welcome to DJI Bank";
-                // API call
-                Currency.RootObject rootObject;
-                HttpClient client = new HttpClient();
-                string x = await client.GetStringAsync(new Uri("http://api.fixer.io/latest?base=NZD"));
-                rootObject = JsonConvert.DeserializeObject<Currency.RootObject>(x);
-                double AUD = rootObject.rates.AUD;
-                double EUR = rootObject.rates.EUR;
-                double CAD = rootObject.rates.CAD;
-                double USD = rootObject.rates.USD;
-                double INR = rootObject.rates.INR;
-                double JPY = rootObject.rates.JPY;
-                double GBP = rootObject.rates.GBP;
-                double SGD = rootObject.rates.SGD;
+                bool isFafafa = true;
+                ExchangeLUIS StLUIS = await GetEntityFromLUIS(activity.Text);
+                if (StLUIS.intents.Count() > 0)
+                {
+                    switch (StLUIS.intents[0].intent)
+                    {
+                        case "ExchangeRate":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            break;
+                        case "ExchangeRate2":
+                            endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            break;
+                        default:
+                            isFafafa = false;
+                            //endOutput = "Sorry, I am not getting you...";
+                            break;
+                    }
+                    if (isFafafa == true)
+                    {
+                        Activity replyToConversation = activity.CreateReply("1 NZD will give you:");
+                        replyToConversation.Recipient = activity.From;
+                        replyToConversation.Type = "message";
+                        replyToConversation.Attachments = new List<Attachment>();
+                        //List<CardImage> cardImages = new List<CardImage>();
+                        //cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = endOutput,
+                            //Subtitle = "",
+                            //Images = cardImages
+                        };
+                        Attachment plAttachment = plCard.ToAttachment();
+                        replyToConversation.Attachments.Add(plAttachment);
+                        var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    }
+
+
+
+
+                }
+                else
+                {
+                    endOutput = "Sorry, I am not getting you...";
+                }
+
 
                 // calc something for us to return
                 if (userData.GetProperty<bool>("SentGreeting"))
@@ -64,58 +97,8 @@ namespace BankBot
                     isBankRequest = false; 
                 }
                 // Show exchange rates with base currency of NZD
-                if (userMessage.ToLower().Contains("convert"))
+                if (userMessage.ToLower().Contains("convertssss"))
                 {
-                    var currencyType = userMessage.Split(' '); // e.g. AUD
-                    var toRate = currencyType[1];
-                    if (toRate == "AUD")
-                    {
-                        endOutput = currencyType[1] + ": " + AUD;
-                    }
-                    if (toRate == "EUR")
-                    {
-                        endOutput = currencyType[1] + ": " +  EUR;
-                    }
-                    if (toRate == "CAD")
-                    {
-                        endOutput = currencyType[1] + ": " + CAD;
-                    }
-                    if (toRate == "USD")
-                    {
-                        endOutput = currencyType[1] + ": " + USD;
-                    }
-                    if (toRate == "INR")
-                    {
-                        endOutput = currencyType[1] + ": " + INR;
-                    }
-                    if (toRate == "JPY")
-                    {
-                        endOutput = currencyType[1] + ": " + JPY;
-                    }
-                    if (toRate == "GBP")
-                    {
-                        endOutput = currencyType[1] + ": " + GBP;
-                    }
-                    if (toRate == "SGD")
-                    {
-                        endOutput = currencyType[1] + ": " +SGD;
-                    }
-                    Activity replyToConversation = activity.CreateReply("1 NZD will give you:");
-                    replyToConversation.Recipient = activity.From;
-                    replyToConversation.Type = "message";
-                    replyToConversation.Attachments = new List<Attachment>();
-                    //List<CardImage> cardImages = new List<CardImage>();
-                    //cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
-                    HeroCard plCard = new HeroCard()
-                    {
-                        Title = endOutput,
-                        //Subtitle = "",
-                        //Images = cardImages
-                    };
-                    Attachment plAttachment = plCard.ToAttachment();
-                    replyToConversation.Attachments.Add(plAttachment);
-                    var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
-                    return Request.CreateResponse(HttpStatusCode.OK);
                 }
                 // Card to show more information about bot
                 if (userMessage.ToLower().Contains("jdi bank"))
@@ -220,6 +203,78 @@ namespace BankBot
             }
 
             return null;
+        }
+        // LUIS Integration
+        private static async Task<ExchangeLUIS> GetEntityFromLUIS(string Query)
+        {
+            Query = Uri.EscapeDataString(Query);
+            ExchangeLUIS Data = new ExchangeLUIS();
+            using (HttpClient client = new HttpClient())
+            {
+                string RequestURI = "https://api.projectoxford.ai/luis/v2.0/apps/22fc874e-00f2-4c74-b9d8-5edab286bb0a?subscription-key=e394d52977564fa3b44142e95719fcb6&q=" + Query + "&verbose=true";
+                HttpResponseMessage msg = await client.GetAsync(RequestURI);
+
+                if (msg.IsSuccessStatusCode)
+                {
+                    var JsonDataResponse = await msg.Content.ReadAsStringAsync();
+                    Data = JsonConvert.DeserializeObject<ExchangeLUIS>(JsonDataResponse);
+                }
+            }
+            return Data;
+        }
+
+        private async Task<string> GetExchange(string ExchangeSymbol)
+        {
+            // API call
+            Currency.RootObject rootObject;
+            HttpClient client = new HttpClient();
+            string x = await client.GetStringAsync(new Uri("http://api.fixer.io/latest?base=NZD"));
+            rootObject = JsonConvert.DeserializeObject<Currency.RootObject>(x);
+            double AUD = rootObject.rates.AUD;
+            double EUR = rootObject.rates.EUR;
+            double CAD = rootObject.rates.CAD;
+            double USD = rootObject.rates.USD;
+            double INR = rootObject.rates.INR;
+            double JPY = rootObject.rates.JPY;
+            double GBP = rootObject.rates.GBP;
+            double SGD = rootObject.rates.SGD;
+
+            //var currencyType = userMessage.Split(' '); // e.g. AUD
+            var toRate = ExchangeSymbol.ToUpper();
+            var endOutput = "";
+            if (toRate == "AUD")
+            {
+                endOutput = toRate + ": " + AUD;
+            }
+            if (toRate == "EUR")
+            {
+                endOutput = toRate + ": " + EUR;
+            }
+            if (toRate == "CAD")
+            {
+                endOutput = toRate + ": " + CAD;
+            }
+            if (toRate == "USD")
+            {
+                endOutput = toRate + ": " + USD;
+            }
+            if (toRate == "INR")
+            {
+                endOutput = toRate + ": " + INR;
+            }
+            if (toRate == "JPY")
+            {
+                endOutput = toRate + ": " + JPY;
+            }
+            if (toRate == "GBP")
+            {
+                endOutput = toRate + ": " + GBP;
+            }
+            if (toRate == "SGD")
+            {
+                endOutput = toRate + ": " + SGD;
+            }
+            return endOutput;
         }
     }
 }
