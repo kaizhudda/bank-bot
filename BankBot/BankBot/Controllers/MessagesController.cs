@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using BankBot.Models;
 using System.Collections.Generic;
 using BankBot.DataModels;
+using Microsoft.Bot.Builder.Dialogs;
 
 namespace BankBot
 {
@@ -36,7 +37,10 @@ namespace BankBot
                 bool isBankNumber = false;
                 bool isOpeningHours = false;
                 bool isExchangeRateFull = false;
-                bool isBankInfo = false; 
+                bool isBankInfo = false;
+                bool isHelp = false;
+                bool isRating = false;
+                bool isRated = false;
                 //string[] currencyList = { };
                 ExchangeLUIS StLUIS = await GetEntityFromLUIS(activity.Text);
                 if (StLUIS.intents.Count() > 0)
@@ -94,6 +98,14 @@ namespace BankBot
                         case "LearnMoreAboutJDI":
                             //currenyList = GetExchangeRates(StLUIS.entities[0].type);
                             isBankInfo = true;
+                            break;
+                        case "HelpCommand":
+                            //endOutput = await GetExchange(StLUIS.entities[0].entity);
+                            isHelp = true;
+                            break;
+                        case "Ratings":
+                            endOutput = "No problem! Please rate the bank out of 5.";
+                            isRating = true;
                             break;
                         default:
                             isFound = false;
@@ -227,17 +239,49 @@ namespace BankBot
 
                         return Request.CreateResponse(HttpStatusCode.OK);
                     }
+                    else if (isFound == true && isHelp == true)
+                    {
+                        Activity replyToConversation = activity.CreateReply("");
+                        replyToConversation.Recipient = activity.From;
+                        replyToConversation.Type = "message";
+                        replyToConversation.Attachments = new List<Attachment>();
+                        //replyToConversation.AttachmentLayout = "carousel";
+                        List<CardImage> cardImages = new List<CardImage>();
+                        cardImages.Add(new CardImage(url: "https://s14.postimg.org/jcnq2xcgh/Bank_Help_Commands.png"));
+                        HeroCard plCard = new HeroCard()
+                        {
+                            //Title = "Help Commands",
+                            //Subtitle = "will give you 1.00 NZD",
+                            Images = cardImages
+                        };
+                        Attachment plAttachment = plCard.ToAttachment();
+                        replyToConversation.Attachments.Add(plAttachment);
+                        var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    } else if (isFound == true && isRating == true) {
+                        Activity infoReply1 = activity.CreateReply(endOutput);
+                        await connector.Conversations.ReplyToActivityAsync(infoReply1);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+
+                    } else if (isFound == true && isRated == true)
+                    {
+                        Activity infoReply1 = activity.CreateReply(endOutput);
+                        await connector.Conversations.ReplyToActivityAsync(infoReply1);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+
+                    }
                 }
                 else
                 {
                     endOutput = "Sorry, I am not getting you...";
                 }
 
+               
 
                 // calc something for us to return
                 if (userData.GetProperty<bool>("SentGreeting"))
                 {
-                    endOutput = "Hello, thanks for visiting us again! Type 'help' for list of commands you can ask me!";
+                    endOutput = "Hello " + activity.From.Name + ", thanks for visiting us again! Type 'help' for list of commands you can ask me!";
                 } else
                 {
                     userData.SetProperty<bool>("SentGreeting", true);
@@ -246,6 +290,7 @@ namespace BankBot
 
                 var userMessage = activity.Text;
                 bool isBankRequest = true; 
+
 
                 if (userMessage.ToLower().Contains("clear"))
                 {
@@ -289,30 +334,30 @@ namespace BankBot
 
                 }
 
-                if (userMessage.ToLower().Equals("get timelines"))
+                if (userMessage.ToLower().Equals("get ratings"))
                 {
                     List<Timeline> timelines = await AzureManager.AzureManagerInstance.GetTimelines();
                     endOutput = "";
+                    int numOfRatings = 0;
+                    int sumOfRatings = 0; 
                     foreach (Timeline t in timelines)
                     {
-                        endOutput += "[" + t.Date + "] Happiness " + t.Name+ ", Sadness " + t.Sadness + "\n\n";
+                        numOfRatings++;
+                        sumOfRatings += t.Rating; 
+                        endOutput += "[" + t.Date + "] " + t.Name+ ", Rating " + t.Rating + "\n\n";
                     }
+                    double sum = sumOfRatings / numOfRatings;
                     isBankRequest = false;
+                    endOutput += "Avg Rating: " + sum;
 
                 }
 
-                if (userMessage.ToLower().Equals("new timeline"))
+                if (userMessage.ToLower().Contains("0") || userMessage.ToLower().Contains("1") || userMessage.ToLower().Contains("2") || userMessage.ToLower().Contains("3") || userMessage.ToLower().Contains("4") || userMessage.ToLower().Contains("5"))
                 {
                     Timeline timeline = new Timeline()
                     {
-                        Anger = 0.1,
-                        Contempt = 0.2,
-                        Disgust = 0.3,
-                        Fear = 0.3,
-                        Happiness = 0.3,
-                        Neutral = 0.2,
-                        Sadness = 0.4,
-                        Surprise = 0.4,
+                        Name = activity.From.Name,
+                        Rating = Int32.Parse(userMessage),
                         Date = DateTime.Now
                     };
 
@@ -320,7 +365,7 @@ namespace BankBot
 
                     isBankRequest = false;
 
-                    endOutput = "New timeline added [" + timeline.Date + "]";
+                    endOutput = "Your Rating has been added! Thanks " + timeline.Name;
                 }
 
                 if (endOutput == "Hello, welcome to DJI Bank")
@@ -351,8 +396,8 @@ namespace BankBot
                     replyToConversation.Attachments.Add(plAttachment);
                     HeroCard plCard2 = new HeroCard()
                     {
-                        Title = "help",
-                        Subtitle = "help is on its way!",
+                        Title = "To see a list of commands",
+                        Subtitle = "type 'help'",
                         Images = cardImages
                     };
                     Attachment plAttachment2 = plCard2.ToAttachment();
