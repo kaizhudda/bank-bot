@@ -37,3 +37,12 @@ C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\zh-hans\Microsoft
 C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\BankBot.csprojResolveAssemblyReference.cache
 C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\Bot Application1.dll
 C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\Bot Application1.pdb
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.WindowsAzure.Mobile.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.WindowsAzure.Mobile.Ext.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Net.Http.Extensions.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Net.Http.Primitives.dll
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.WindowsAzure.Mobile.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\Microsoft.WindowsAzure.Mobile.Ext.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Net.Http.Extensions.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\bin\System.Net.Http.Primitives.xml
+C:\Users\kaizh\Documents\Projects\bank-bot\BankBot\BankBot\obj\Release\BankBot.csproj.App.config

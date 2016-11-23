@@ -9,6 +9,7 @@ using Microsoft.Bot.Connector;
 using Newtonsoft.Json;
 using BankBot.Models;
 using System.Collections.Generic;
+using BankBot.DataModels;
 
 namespace BankBot
 {
@@ -34,6 +35,9 @@ namespace BankBot
                 bool isExchangeRate = false;
                 bool isBankNumber = false;
                 bool isOpeningHours = false;
+                bool isExchangeRateFull = false;
+                bool isBankInfo = false; 
+                //string[] currencyList = { };
                 ExchangeLUIS StLUIS = await GetEntityFromLUIS(activity.Text);
                 if (StLUIS.intents.Count() > 0)
                 {
@@ -83,6 +87,14 @@ namespace BankBot
                             endOutput = GetBankHours(StLUIS.entities[0].type);
                             isOpeningHours = true;
                             break;
+                        case "AllExchangeRatesNow":
+                            //currenyList = GetExchangeRates(StLUIS.entities[0].type);
+                            isExchangeRateFull = true;
+                            break;
+                        case "LearnMoreAboutJDI":
+                            //currenyList = GetExchangeRates(StLUIS.entities[0].type);
+                            isBankInfo = true;
+                            break;
                         default:
                             isFound = false;
                             //endOutput = "Sorry, I am not getting you...";
@@ -94,6 +106,7 @@ namespace BankBot
                         replyToConversation.Recipient = activity.From;
                         replyToConversation.Type = "message";
                         replyToConversation.Attachments = new List<Attachment>();
+                        //replyToConversation.AttachmentLayout = "carousel";
                         //List<CardImage> cardImages = new List<CardImage>();
                         //cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
                         HeroCard plCard = new HeroCard()
@@ -138,11 +151,82 @@ namespace BankBot
                         Activity openHourReply = activity.CreateReply(endOutput);
                         await connector.Conversations.ReplyToActivityAsync(openHourReply);
                         return Request.CreateResponse(HttpStatusCode.OK);
+                    } else if (isFound == true && isExchangeRateFull == true)
+                    {
+                        string AUDValue = await GetExchange("AUD");
+                        string USDValue = await GetExchange("USD");
+                        string EURValue = await GetExchange("EUR");
+                        string GBPValue = await GetExchange("GBP");
+                        Activity replyToConversation = activity.CreateReply("");
+                        replyToConversation.Recipient = activity.From;
+                        replyToConversation.Type = "message";
+                        replyToConversation.Attachments = new List<Attachment>();
+                        replyToConversation.AttachmentLayout = "carousel";
+                        //List<CardImage> cardImages = new List<CardImage>();
+                        //cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = AUDValue,
+                            Subtitle = "will give you 1.00 NZD",
+                            //Images = cardImages
+                        };
+                        Attachment plAttachment = plCard.ToAttachment();
+                        HeroCard plCard2 = new HeroCard()
+                        {
+                            Title = USDValue,
+                            Subtitle = "will give you 1.00 NZD",
+                            //Images = cardImages
+                        };
+                        Attachment plAttachment2 = plCard2.ToAttachment();
+                        HeroCard plCard3 = new HeroCard()
+                        {
+                            Title = EURValue,
+                            Subtitle = "will give you 1.00 NZD",
+                            //Images = cardImages
+                        };
+                        Attachment plAttachment3 = plCard3.ToAttachment();
+                        HeroCard plCard4 = new HeroCard()
+                        {
+                            Title = GBPValue,
+                            Subtitle = "will give you 1.00 NZD",
+                            //Images = cardImages
+                        };
+                        Attachment plAttachment4 = plCard4.ToAttachment();
+                        replyToConversation.Attachments.Add(plAttachment);
+                        replyToConversation.Attachments.Add(plAttachment2);
+                        replyToConversation.Attachments.Add(plAttachment3);
+                        replyToConversation.Attachments.Add(plAttachment4);
+                        var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
+                        return Request.CreateResponse(HttpStatusCode.OK);
+                    } else if (isFound == true && isBankInfo == true)
+                    {
+                        Activity replyToConversation = activity.CreateReply("JDI Bank information");
+                        replyToConversation.Recipient = activity.From;
+                        replyToConversation.Type = "message";
+                        replyToConversation.Attachments = new List<Attachment>();
+                        List<CardImage> cardImages = new List<CardImage>();
+                        cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        List<CardAction> cardButtons = new List<CardAction>();
+                        CardAction plButton = new CardAction()
+                        {
+                            Value = "http://anz.co.nz",
+                            Type = "openUrl",
+                            Title = "JDI Bank Website"
+                        };
+                        cardButtons.Add(plButton);
+                        ThumbnailCard plCard = new ThumbnailCard()
+                        {
+                            Title = "Visit JDI Bank",
+                            Subtitle = "online banking",
+                            Images = cardImages,
+                            Buttons = cardButtons
+                        };
+                        Attachment plAttachment = plCard.ToAttachment();
+                        replyToConversation.Attachments.Add(plAttachment);
+                        await connector.Conversations.SendToConversationAsync(replyToConversation);
+
+                        return Request.CreateResponse(HttpStatusCode.OK);
                     }
-
-
-
-
                 }
                 else
                 {
@@ -203,6 +287,40 @@ namespace BankBot
 
                     return Request.CreateResponse(HttpStatusCode.OK);
 
+                }
+
+                if (userMessage.ToLower().Equals("get timelines"))
+                {
+                    List<Timeline> timelines = await AzureManager.AzureManagerInstance.GetTimelines();
+                    endOutput = "";
+                    foreach (Timeline t in timelines)
+                    {
+                        endOutput += "[" + t.Date + "] Happiness " + t.Name+ ", Sadness " + t.Sadness + "\n\n";
+                    }
+                    isBankRequest = false;
+
+                }
+
+                if (userMessage.ToLower().Equals("new timeline"))
+                {
+                    Timeline timeline = new Timeline()
+                    {
+                        Anger = 0.1,
+                        Contempt = 0.2,
+                        Disgust = 0.3,
+                        Fear = 0.3,
+                        Happiness = 0.3,
+                        Neutral = 0.2,
+                        Sadness = 0.4,
+                        Surprise = 0.4,
+                        Date = DateTime.Now
+                    };
+
+                    await AzureManager.AzureManagerInstance.AddTimeline(timeline);
+
+                    isBankRequest = false;
+
+                    endOutput = "New timeline added [" + timeline.Date + "]";
                 }
 
                 if (endOutput == "Hello, welcome to DJI Bank")
