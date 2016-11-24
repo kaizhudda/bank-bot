@@ -204,10 +204,26 @@ namespace BankBot
                             //Images = cardImages
                         };
                         Attachment plAttachment4 = plCard4.ToAttachment();
+                        List<CardAction> cardButtons = new List<CardAction>();
+                        CardAction plButton = new CardAction()
+                        {
+                            Value = "http://xe.com",
+                            Type = "openUrl",
+                            Title = "Convert more currencies now!"
+                        };
+                        cardButtons.Add(plButton);
+                        HeroCard plCard5 = new HeroCard()
+                        {
+                            //Title = "Converter",
+                            //Subtitle = "will give you 1.00 NZD",
+                            Buttons = cardButtons
+                        };
+                        Attachment plAttachment5 = plCard5.ToAttachment();
                         replyToConversation.Attachments.Add(plAttachment);
                         replyToConversation.Attachments.Add(plAttachment2);
                         replyToConversation.Attachments.Add(plAttachment3);
                         replyToConversation.Attachments.Add(plAttachment4);
+                        replyToConversation.Attachments.Add(plAttachment5);
                         var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     } else if (isFound == true && isBankInfo == true)
@@ -352,7 +368,7 @@ namespace BankBot
 
                 }
 
-                if (userMessage.ToLower().Contains("0") || userMessage.ToLower().Contains("1") || userMessage.ToLower().Contains("2") || userMessage.ToLower().Contains("3") || userMessage.ToLower().Contains("4") || userMessage.ToLower().Contains("5"))
+                if (userMessage.ToLower().Equals("0") || userMessage.ToLower().Equals("1") || userMessage.ToLower().Equals("2") || userMessage.ToLower().Equals("3") || userMessage.ToLower().Equals("4") || userMessage.ToLower().Equals("5"))
                 {
                     Timeline timeline = new Timeline()
                     {
@@ -366,6 +382,63 @@ namespace BankBot
                     isBankRequest = false;
 
                     endOutput = "Your Rating has been added! Thanks " + timeline.Name;
+                }
+
+                if (userMessage.ToLower().Contains("update ratings to"))
+                {
+                    var newRating = userMessage.Split(' ');
+                    List<Timeline> timelines = await AzureManager.AzureManagerInstance.GetTimelines();
+                    string userName = activity.From.Name;
+                    bool isUpdated = false; 
+                    foreach (Timeline t in timelines)
+                    {
+                        
+                        if (t.Name.Equals(userName)) 
+                        {
+                            t.Rating = Int32.Parse(newRating[3]);
+                            await AzureManager.AzureManagerInstance.UpdateTimeline(t);
+                            endOutput = "Your NEW Rating has been added! Thanks " + activity.From.Name;
+                            isUpdated = true; 
+                            break;
+                        }
+                    }
+
+                    
+                    if (isUpdated == false)
+                    {
+                        isBankRequest = false;
+                        endOutput = "Sorry we are unable to update your ratings! Make sure you have correctly typed a rating!";
+                    }
+                    
+                    
+                }
+
+                if (userMessage.ToLower().Contains("delete my rating"))
+                {
+                    var newRating = userMessage.Split(' ');
+                    List<Timeline> timelines = await AzureManager.AzureManagerInstance.GetTimelines();
+                    string userName = activity.From.Name;
+                    bool isUpdated = false;
+                    foreach (Timeline t in timelines)
+                    {
+
+                        if (t.Name.Equals(userName))
+                        {
+                            await AzureManager.AzureManagerInstance.DeleteTimeline(t);
+                            endOutput = "Your Rating has been deleted! Thanks " + activity.From.Name;
+                            isUpdated = true;
+                            break;
+                        }
+                    }
+
+
+                    if (isUpdated == false)
+                    {
+                        isBankRequest = false;
+                        endOutput = "Sorry we are unable to delete your ratings! Make sure you have correctly typed the command!";
+                    }
+
+
                 }
 
                 if (endOutput == "Hello, welcome to DJI Bank")
