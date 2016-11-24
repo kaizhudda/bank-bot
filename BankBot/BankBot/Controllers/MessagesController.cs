@@ -44,7 +44,7 @@ namespace BankBot
                 //string[] currencyList = { };
                 ExchangeLUIS StLUIS = await GetEntityFromLUIS(activity.Text);
                 if (StLUIS.intents.Count() > 0)
-                {
+                 {
                     switch (StLUIS.intents[0].intent)
                     {
                         case "ExchangeRate":
@@ -104,7 +104,7 @@ namespace BankBot
                             isHelp = true;
                             break;
                         case "Ratings":
-                            endOutput = "No problem! Please rate the bank out of 5.";
+                            //endOutput = "No problem! Please rate the bank out of 5.";
                             isRating = true;
                             break;
                         default:
@@ -120,7 +120,7 @@ namespace BankBot
                         replyToConversation.Attachments = new List<Attachment>();
                         //replyToConversation.AttachmentLayout = "carousel";
                         //List<CardImage> cardImages = new List<CardImage>();
-                        //cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        //cardImages.Add(new CardImage(url: "https://s14.postimg.org/hzleh2doh/15209121_1868667360019432_1788343028_n.jpg"));
                         HeroCard plCard = new HeroCard()
                         {
                             Title = endOutput,
@@ -138,7 +138,7 @@ namespace BankBot
                         replyToConversation.Attachments = new List<Attachment>();
                         //replyToConversation.AttachmentLayout = "carousel";
                         List<CardImage> cardImages = new List<CardImage>();
-                        cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        cardImages.Add(new CardImage(url: "https://s14.postimg.org/hzleh2doh/15209121_1868667360019432_1788343028_n.jpg"));
                         List<CardAction> cardButtons = new List<CardAction>();
                         CardAction plButton = new CardAction()
                         {
@@ -207,7 +207,7 @@ namespace BankBot
                         List<CardAction> cardButtons = new List<CardAction>();
                         CardAction plButton = new CardAction()
                         {
-                            Value = "http://xe.com",
+                            Value = "https://xe.com",
                             Type = "openUrl",
                             Title = "Convert more currencies now!"
                         };
@@ -233,11 +233,11 @@ namespace BankBot
                         replyToConversation.Type = "message";
                         replyToConversation.Attachments = new List<Attachment>();
                         List<CardImage> cardImages = new List<CardImage>();
-                        cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                        cardImages.Add(new CardImage(url: "https://s14.postimg.org/hzleh2doh/15209121_1868667360019432_1788343028_n.jpg"));
                         List<CardAction> cardButtons = new List<CardAction>();
                         CardAction plButton = new CardAction()
                         {
-                            Value = "http://anz.co.nz",
+                            Value = "https://anz.co.nz",
                             Type = "openUrl",
                             Title = "JDI Bank Website"
                         };
@@ -261,9 +261,14 @@ namespace BankBot
                         replyToConversation.Recipient = activity.From;
                         replyToConversation.Type = "message";
                         replyToConversation.Attachments = new List<Attachment>();
-                        //replyToConversation.AttachmentLayout = "carousel";
+                        replyToConversation.AttachmentLayout = "carousel";
                         List<CardImage> cardImages = new List<CardImage>();
-                        cardImages.Add(new CardImage(url: "https://s14.postimg.org/jcnq2xcgh/Bank_Help_Commands.png"));
+                        cardImages.Add(new CardImage(url: "https://s11.postimg.org/5y1rtv75v/Help_Exchange_Rates.png"));
+                        List<CardImage> cardImages1 = new List<CardImage>();
+                        cardImages1.Add(new CardImage(url: "https://s15.postimg.org/r29lqgpsb/Help_Opening_About_Number.png"));
+                        List<CardImage> cardImages2 = new List<CardImage>();
+                        cardImages2.Add(new CardImage(url: "https://s17.postimg.org/5epvmzvrz/Help_Ratings.png"));
+                        //cardImages.Add(new CardImage(url: "https://s11.postimg.org/5y1rtv75v/Help_Exchange_Rates.png"));
                         HeroCard plCard = new HeroCard()
                         {
                             //Title = "Help Commands",
@@ -271,12 +276,86 @@ namespace BankBot
                             Images = cardImages
                         };
                         Attachment plAttachment = plCard.ToAttachment();
+                        HeroCard plCard1 = new HeroCard()
+                        {
+                            //Title = "Help Commands",
+                            //Subtitle = "will give you 1.00 NZD",
+                            Images = cardImages1
+                        };
+                        Attachment plAttachment1 = plCard1.ToAttachment();
+                        HeroCard plCard2 = new HeroCard()
+                        {
+                            //Title = "Help Commands",
+                            //Subtitle = "will give you 1.00 NZD",
+                            Images = cardImages2
+                        };
+                        Attachment plAttachment2 = plCard2.ToAttachment();
                         replyToConversation.Attachments.Add(plAttachment);
+                        replyToConversation.Attachments.Add(plAttachment1);
+                        replyToConversation.Attachments.Add(plAttachment2);
                         var reply = await connector.Conversations.SendToConversationAsync(replyToConversation);
                         return Request.CreateResponse(HttpStatusCode.OK);
                     } else if (isFound == true && isRating == true) {
-                        Activity infoReply1 = activity.CreateReply(endOutput);
-                        await connector.Conversations.ReplyToActivityAsync(infoReply1);
+                        Activity replyToConversation = activity.CreateReply("No problem!");
+                        replyToConversation.Recipient = activity.From;
+                        replyToConversation.Type = "message";
+                        replyToConversation.Attachments = new List<Attachment>();
+                        List<CardImage> cardImages = new List<CardImage>();
+                        cardImages.Add(new CardImage(url: "https://s14.postimg.org/hzleh2doh/15209121_1868667360019432_1788343028_n.jpg"));
+                        List<CardAction> cardButtons = new List<CardAction>();
+                        CardAction plButton4 = new CardAction()
+                        {
+                            Value = "0",
+                            Type = "imBack",
+                            Title = "0"
+                        };
+                        cardButtons.Add(plButton4);
+                        CardAction plButton = new CardAction()
+                        {
+                            Value = "1",
+                            Type = "imBack",
+                            Title = "1"
+                        };
+                        cardButtons.Add(plButton);
+                        CardAction plButton0 = new CardAction()
+                        {
+                            Value = "2",
+                            Type = "imBack",
+                            Title = "2"
+                        };
+                        cardButtons.Add(plButton0);
+                        CardAction plButton1 = new CardAction()
+                        {
+                            Value = "3",
+                            Type = "imBack",
+                            Title = "3"
+                        };
+                        cardButtons.Add(plButton1);
+                        CardAction plButton2 = new CardAction()
+                        {
+                            Value = "4",
+                            Type = "imBack",
+                            Title = "4"
+                        };
+                        cardButtons.Add(plButton2);
+                        CardAction plButton3 = new CardAction()
+                        {
+                            Value = "5",
+                            Type = "imBack",
+                            Title = "5"
+                        };
+                        cardButtons.Add(plButton3);
+                        HeroCard plCard = new HeroCard()
+                        {
+                            Title = "Rate the bank!",
+                            Subtitle = "1 being bad, 5 being amazing",
+                            Images = cardImages,
+                            Buttons = cardButtons
+                        };
+                        Attachment plAttachment = plCard.ToAttachment();
+                        replyToConversation.Attachments.Add(plAttachment);
+                        await connector.Conversations.SendToConversationAsync(replyToConversation);
+
                         return Request.CreateResponse(HttpStatusCode.OK);
 
                     } else if (isFound == true && isRated == true)
@@ -326,11 +405,11 @@ namespace BankBot
                     replyToConversation.Type = "message";
                     replyToConversation.Attachments = new List<Attachment>();
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                    cardImages.Add(new CardImage(url: "https://s14.postimg.org/hzleh2doh/15209121_1868667360019432_1788343028_n.jpg"));
                     List<CardAction> cardButtons = new List<CardAction>();
                     CardAction plButton = new CardAction()
                     {
-                        Value = "http://anz.co.nz",
+                        Value = "https://anz.co.nz",
                         Type = "openUrl",
                         Title = "JDI Bank Website"
                     };
@@ -355,7 +434,7 @@ namespace BankBot
                     List<Timeline> timelines = await AzureManager.AzureManagerInstance.GetTimelines();
                     endOutput = "";
                     int numOfRatings = 0;
-                    int sumOfRatings = 0; 
+                    double sumOfRatings = 0; 
                     foreach (Timeline t in timelines)
                     {
                         numOfRatings++;
@@ -364,7 +443,7 @@ namespace BankBot
                     }
                     double sum = sumOfRatings / numOfRatings;
                     isBankRequest = false;
-                    endOutput += "Avg Rating: " + sum;
+                    endOutput += "Avg Rating: " + Math.Round(sum, 2);
 
                 }
 
@@ -449,7 +528,7 @@ namespace BankBot
                     replyToConversation.Attachments = new List<Attachment>();
                     replyToConversation.AttachmentLayout = "carousel";
                     List<CardImage> cardImages = new List<CardImage>();
-                    cardImages.Add(new CardImage(url: "https://cdn2.iconfinder.com/data/icons/ios-7-style-metro-ui-icons/512/MetroUI_iCloud.png"));
+                    cardImages.Add(new CardImage(url: "https://s14.postimg.org/hzleh2doh/15209121_1868667360019432_1788343028_n.jpg"));
                     List<CardAction> cardButtons = new List<CardAction>();
                     CardAction plButton = new CardAction()
                     {
